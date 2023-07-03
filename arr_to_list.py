@@ -1,16 +1,21 @@
 import asyncio
 from aiohttp import ClientSession
+
+def start(url):
+    return asyncio.run(get_matrix(url))
+
 try:
     async def get_matrix(url: str) -> list[int]:
         async with ClientSession() as session:
             async with session.get(url=url) as response:
                 arr = await response.text()
-                arr_res = [arr.split('\n')[:-1][x].replace(' ','').split('|')[1:-1] for x in range(len(arr.split('\n')[:-1])) if x%2 !=0]
-                asyncio.create_task(matrix_to_list(arr_res))
+                return matrix_to_list(arr)
 except Exception as e:
     print (e)
 
-async def matrix_to_list(mat:list) -> list[int]:
+def matrix_to_list(arr:str) -> list[int]:
+    mat = [arr.split('\n')[:-1][x].replace(' ','').split('|')[1:-1] for x in range(
+        len(arr.split('\n')[:-1])) if x%2 !=0]
     result_list = []
     r = col = 0
     l_row = len(mat)
@@ -28,8 +33,4 @@ async def matrix_to_list(mat:list) -> list[int]:
         r +=1
         l_row -=2
     
-    print(result_list)
-
-url = 'https://raw.githubusercontent.com/avito-tech/python-trainee-assignment/main/matrix.txt'
-
-asyncio.run(get_matrix(url))
+    return result_list
